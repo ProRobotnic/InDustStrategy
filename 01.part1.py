@@ -3,8 +3,11 @@ import pygame
 WIDTH = 800
 FPS = 60
 HEIGHT = 500
-
+horizontal_borders = pygame.sprite.Group()
+vertical_borders = pygame.sprite.Group()
 # --- class ----
+
+# class Border(pygame.sprite.Sprite):
 
 
 class Button(object):
@@ -52,10 +55,9 @@ def stage1(screen):
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
 
-            if button1.is_clicked(event):
-                a = 1
+#            if button1.is_clicked(event):
+                # board = Border()
             if button4.is_clicked(event):
-                # exit
                 pygame.quit()
                 exit()
             if button2.is_clicked(event):
