@@ -16,7 +16,8 @@ con = sqlite3.connect('buildings_db.sqlite')
 cur = con.cursor()
 # Выполнение запроса и получение всех результатов
 buildings_db = cur.execute("""SELECT * FROM buildings""").fetchall()
-print(buildings_db)
+communications_db = cur.execute("""SELECT * FROM communications""").fetchall()
+
 
 # Check of aviliability of communication in list (and creating it if doesn't avavliable)
 def com_check(name, player):
@@ -32,14 +33,19 @@ def com_check(name, player):
 def coms_consuption(name, com_id_list, player):
     global mas
     global players_coms
-    if name == 'electricity'
-    communications_check(name, mas[player], com_id_list, player)
-    coms_map = players_coms[player][name]
-    counter = 0
-    for i in range(coms_map):
-        for j in range(coms_map[i]):
-            if coms_map[i][j] == '-1':
-                pass
+    try:
+        type_communication = 2
+        for i in range(len(communications_db)):
+            if name == communications_db[1]:
+                type_communication += communications_db[0]
+        communications_check(name, mas[player], com_id_list, player)
+        coms_map = players_coms[player][name]
+        counter = 0
+        for i in range(coms_map):
+            for j in range(coms_map[i]):
+                if coms_map[i][j] == '-1':
+                    counter += cur.execute("""SELECT ? FROM buildings WHERE id =""").fetchone()
+
 
 
 
