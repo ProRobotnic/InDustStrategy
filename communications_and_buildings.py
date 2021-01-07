@@ -1,10 +1,13 @@
 import sqlite3
-import pprint
-mas = [[[0, 1, 3, 0, 0],
-        [0, 0, 3, 0, 0],
-        [0, 3, 3, 0, 0],
-        [0, 3, 0, 0, 0],
-        [0, 3, 3, 0, 0]]]
+from copy import deepcopy
+from pprint import pprint
+class CommunicationTypeException(Exception):
+    pass
+mas = [[[1, 0, 3, 0, 3],
+        [3, 0, 3, 0, 3],
+        [3, 0, 3, 0, 3],
+        [3, 0, 0, 0, 3],
+        [3, 3, 3, 3, 3]]]
 
 players_coms = [{}, {}, {}, {}]
 money = [100, 0, 0, 0]
@@ -19,42 +22,49 @@ buildings_db = cur.execute("""SELECT * FROM buildings""").fetchall()
 communications_db = cur.execute("""SELECT * FROM communications""").fetchall()
 
 
-# Check of aviliability of communication in list (and creating it if doesn't avavliable)
-def com_check(name, player):
-    global players_coms
-    global mas
-    try:
-        k = players_coms[player][name]
-    except Exception:
-        players_coms[player][name] = mas[player]
-
-
 # Counting resourse cosuption of active buildings (connected to power)
 def coms_consuption(name, com_id_list, player):
     global mas
-    global players_coms
-    try:
-        type_communication = 2
-        for i in range(len(communications_db)):
-            if name == communications_db[1]:
-                type_communication += communications_db[0]
-        communications_check(name, mas[player], com_id_list, player)
+    type_communication = 2
+    for i in range(len(communications_db)):
+        if name == communications_db[i][1]:
+            type_communication += communications_db[i][0]
+    if type_communication == 2:
+        raise CommunicationTypeException
+    else:
+        communications_check(name, com_id_list, player)
         coms_map = players_coms[player][name]
+        print(coms_map)
         counter = 0
-        for i in range(coms_map):
-            for j in range(coms_map[i]):
-                if coms_map[i][j] == '-1':
-                    counter += cur.execute("""SELECT ? FROM buildings WHERE id =""").fetchone()
+        for i in range(len(coms_map)):
+            for j in range(len(coms_map[i])):
+                if coms_map[i][j] == -1:
+                    com_consup = buildings_db[mas[player][i][j] - 1][type_communication]
+                    print(com_consup)
+                    if com_consup == None:
+                        com_consup = 0
+                    counter += com_consup
+        return counter
 
 
-
+# Standart copy() doesn't work on ^3 lists, so it's my_copy method
+def my_copy(inp):
+    out = []
+    for i in range(len(inp)):
+        out.append([])
+        for k in range(len(inp[i])):
+            out[i].append([])
+            for j in range(len(inp[i][k])):
+                out[i][k].append(inp[i][k][j])
+    return out
 
 
 # Create/renew list of communication(i.e. electricity, heat and so on) map
 def communications_check(name, com_id_list, player):
     global players_coms
-    com_check(name, player)
-    new_map = players_coms[player][name]  # New map of communications
+    global mas
+    players_coms[player][name] = my_copy(mas)[player]
+    new_map = players_coms[player][name][:]  # New map of communications
     for i in range(len(new_map)):
         for j in range(len(new_map[i])):
             if mas[player][i][j] in com_id_list:
@@ -67,11 +77,10 @@ def communications_check(name, com_id_list, player):
 
 # Find all groups, that connected to sourses of smth
 def group_checker(cord, name, id_list, player):
-    pprint.pprint(players_coms[player][name])
+    global players_coms
     players_coms[player][name][cord[0]][cord[1]] = -1
     p_c = players_coms[player][name]
     where = is_void_nearby(cord, p_c)
-    print(where)
     if 1 in where:
         if p_c[cord[0] - 1][cord[1]] not in id_list:
             group_checker([cord[0] - 1, cord[1]], name, id_list, player)
@@ -131,9 +140,8 @@ class Building():
         mas[cord[0], cord[1]] = self.void
 
 
-communications_check('electricity', [1, 2], 0)
-pprint.pprint(players_coms)
+print(coms_consuption('electricity', [1, 2], 0))
+# pprint(players_coms)
 print('Если не выдает ошибку - значит работает.')
-
-
+pprint(mas)
 # List 30х30 -> [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
