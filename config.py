@@ -8,5 +8,8 @@ mas = [[[1, 0, 3, 0, 3],
         ]]
 money = [100, 0, 0, 0]
 turn = 0
-
+# Screen settings
+WIDTH = 800
+FPS = 60
+HEIGHT = 500
 

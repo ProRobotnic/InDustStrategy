@@ -1,8 +1,5 @@
 import pygame
-
-WIDTH = 800
-FPS = 60
-HEIGHT = 500
+from config import *
 horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
 # --- class ----
@@ -79,11 +76,4 @@ def stage1(screen):
         clock.tick(FPS)
 
 
-pygame.init()
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-stage1(screen)
-
-# --- end ---
-
-pygame.quit()
