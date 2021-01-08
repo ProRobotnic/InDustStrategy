@@ -12,7 +12,6 @@ vertical_borders = pygame.sprite.Group()
 
 
 class Button(object):
-
     def __init__(self, position, size, color, text):
 
         self.image = pygame.Surface(size)
@@ -34,5 +33,3 @@ class Button(object):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 return self.rect.collidepoint(event.pos)
-
-

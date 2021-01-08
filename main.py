@@ -5,15 +5,18 @@ import pygame
 from feature_board import Board
 import time
 
+event_type = 'menu'
 pygame.init()
-
+# -- Buttons --
 gl_screen = pygame.display.set_mode((WIDTH, HEIGHT))  # global screen to use in other files
-next_turn_b = menu.Button((1052, 760), (180, 30), (255, 0, 0), "Следующий ход")
+click_on_me_b = menu.Button((276, 312), (600, 100), (255, 0, 0), "Нажми на меня, чтобы начать следующий ход")
+next_turn_b = menu.Button((952, 690), (200, 30), (255, 0, 0), "Следующий ход")
 button1 = menu.Button((476, 250), (200, 35), (255, 0, 0), "  Играть  ")
 button2 = menu.Button((476, 300), (200, 35), (255, 0, 0), " Правила ")
 button3 = menu.Button((476, 350), (200, 35), (255, 0, 0), "Настройки")
 button4 = menu.Button((476, 400), (200, 35), (255, 0, 0), "  Выход  ")
 menu_buttons = [button1, button2, button3, button4]
+# -- Main game cycle --
 clock = pygame.time.Clock()
 running = True
 while running:
@@ -40,34 +43,33 @@ while running:
         elif event_type == 'board':
             if next_turn_b.is_clicked(event):
                 event_type = 'nextturn'
+        elif event_type == 'nextturn':
+            if click_on_me_b.is_clicked(event):
+                event_type = 'board'
 
     # --- draws ---
-    screen_painter(gl_screen, event_type)
+
+    if event_type == 'menu':
+        gl_screen.fill((230, 230, 230))
+        for button in menu_buttons:
+            button.draw(gl_screen)
+
+    elif event_type == 'board':
+        gl_screen.fill((245, 245, 245))
+        game_board = Board()
+        next_turn_b.draw(gl_screen)
+        game_board.render(gl_screen)
+
+    elif event_type == 'nextturn':
+        global turn
+        gl_screen.fill((245, 245, 245))
+        click_on_me_b.draw(gl_screen)
+        turn += 1
     pygame.display.flip()
 
     # --- FPS ---
 
     clock.tick(FPS)
-
-
-# Def to draw on pygame screen
-def screen_painter(screen, event_type):
-    if event_type == 'menu':
-        screen.fill((230, 230, 230))
-        for button in menu_buttons:
-            button.draw(screen)
-    elif event_type == 'board':
-        screen.fill((245, 245, 245))
-        game_board = Board()
-        game_board.render(screen)
-
-    elif event_type == 'nextturn':
-        global turn
-        screen.fill((245, 245, 245))
-        time.sleep(time_to_next_turn)
-        turn += 1
-        screen_painter(screen, 'board')
-
 
 # --- end ---
 pygame.quit()
