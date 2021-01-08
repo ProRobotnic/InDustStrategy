@@ -19,7 +19,7 @@ class Button(object):
         self.rect = pygame.Rect((0, 0), size)
 
         font = pygame.font.SysFont('None', 32)
-        text = font.render(text, True, (255, 230, 230))
+        text = font.render(text, True, (255, 200, 200))
         text_rect = text.get_rect()
         text_rect.center = self.rect.center
 

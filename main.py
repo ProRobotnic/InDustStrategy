@@ -9,12 +9,12 @@ event_type = 'menu'
 pygame.init()
 # -- Buttons --
 gl_screen = pygame.display.set_mode((WIDTH, HEIGHT))  # global screen to use in other files
-click_on_me_b = menu.Button((276, 312), (600, 100), (255, 0, 0), "Нажми на меня, чтобы начать следующий ход")
-next_turn_b = menu.Button((952, 690), (200, 30), (255, 0, 0), "Следующий ход")
-button1 = menu.Button((476, 250), (200, 35), (255, 0, 0), "  Играть  ")
-button2 = menu.Button((476, 300), (200, 35), (255, 0, 0), " Правила ")
-button3 = menu.Button((476, 350), (200, 35), (255, 0, 0), "Настройки")
-button4 = menu.Button((476, 400), (200, 35), (255, 0, 0), "  Выход  ")
+click_on_me_b = menu.Button((276, 312), (600, 100), (200, 30, 30), "Нажми на меня, чтобы начать следующий ход")
+next_turn_b = menu.Button((952, 690), (200, 30), (200, 30, 30), "Следующий ход")
+button1 = menu.Button((476, 250), (200, 35), (200, 30, 30), "  Играть  ")
+button2 = menu.Button((476, 300), (200, 35), (200, 30, 30), " Правила ")
+button3 = menu.Button((476, 350), (200, 35), (200, 30, 30), "Настройки")
+button4 = menu.Button((476, 400), (200, 35), (200, 30, 30), "  Выход  ")
 menu_buttons = [button1, button2, button3, button4]
 # -- Main game cycle --
 clock = pygame.time.Clock()
@@ -45,7 +45,11 @@ while running:
                 event_type = 'nextturn'
         elif event_type == 'nextturn':
             if click_on_me_b.is_clicked(event):
+                global turn
+                turn += 1
+                turn = turn % players_amount
                 event_type = 'board'
+
 
     # --- draws ---
 
@@ -61,10 +65,8 @@ while running:
         game_board.render(gl_screen)
 
     elif event_type == 'nextturn':
-        global turn
         gl_screen.fill((245, 245, 245))
         click_on_me_b.draw(gl_screen)
-        turn += 1
     pygame.display.flip()
 
     # --- FPS ---
