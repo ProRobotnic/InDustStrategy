@@ -23,3 +23,4 @@ class Board:
             for j in range(30):
                 pygame.draw.rect(screen, self.color,
                                  (i * self.cell_size + 1, j * self.cell_size, self.cell_size, self.cell_size), 1)
+

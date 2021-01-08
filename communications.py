@@ -14,8 +14,8 @@ con = sqlite3.connect('buildings_db.sqlite')
 # Создание курсора
 cur = con.cursor()
 # Выполнение запроса и получение всех результатов
-buildings_db = cur.execute("""SELECT * FROM buildings""").fetchall()
-communications_db = cur.execute("""SELECT * FROM communications""").fetchall()
+buildings_db = cur.execute("""SELECT * FROM buildings ORDER BY id""").fetchall()
+communications_db = cur.execute("""SELECT * FROM communications ORDER BY id""").fetchall()
 
 
 # Counting resourse cosuption of active buildings (connected to power)
