@@ -1,7 +1,12 @@
 import pygame
 from config import *
+from events import screen_painter
+
+menu_buttons = []
 horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
+
+
 # --- class ----
 
 # class Border(pygame.sprite.Sprite):
@@ -33,13 +38,16 @@ class Button(object):
 
 
 def stage1(screen):
-
-    button1 = Button((340, 25), (120, 30), (0, 255, 0), "  Играть  ")
-    button2 = Button((340, 75), (120, 30), (0, 255, 0), " Правила ")
-    button3 = Button((340, 125), (120, 30), (0, 255, 0), "Настройки")
-    button4 = Button((340, 175), (120, 30), (0, 255, 0), "  Выход  ")
+    global menu_buttons
+    menu_screen = screen
+    button1 = Button((516, 250), (120, 30), (255, 0, 0), "  Играть  ")
+    button2 = Button((516, 300), (120, 30), (255, 0, 0), " Правила ")
+    button3 = Button((516, 350), (120, 30), (255, 0, 0), "Настройки")
+    button4 = Button((516, 400), (120, 30), (255, 0, 0), "  Выход  ")
+    menu_buttons = [button1, button2, button3, button4]
     clock = pygame.time.Clock()
     running = True
+    event_type = 'menu'
     while running:
 
         # --- events ---
@@ -52,8 +60,8 @@ def stage1(screen):
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
 
-#            if button1.is_clicked(event):
-                # board = Border()
+            if button1.is_clicked(event):
+                event_type = 'board'
             if button4.is_clicked(event):
                 pygame.quit()
                 exit()
@@ -62,18 +70,10 @@ def stage1(screen):
             if button3.is_clicked(event):
                 a = 1
 
-    # --- draws ---
-
-        screen.fill((0, 250, 250))
-        button1.draw(screen)
-        button2.draw(screen)
-        button4.draw(screen)
-        button3.draw(screen)
+        # --- draws ---
+        screen_painter(screen, event_type)
         pygame.display.flip()
 
         # --- FPS ---
 
         clock.tick(FPS)
-
-
-

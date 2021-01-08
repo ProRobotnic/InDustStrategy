@@ -1,16 +1,15 @@
 import pygame
-size = 1152, 720
-screen = pygame.display.set_mode(size)
 
 
 class Board:
     # создание поля
-    def __init__(self):
+    def __init__(self, color=pygame.Color(70, 70, 70)):
         self.board = [[0] * 30 for _ in range(30)]
         # значения по умолчанию
         self.left = 1
         self.top = 1
         self.cell_size = 24
+        self.color = color
 
     # настройка внешнего вида
 
@@ -19,8 +18,8 @@ class Board:
         self.top = top
         self.cell_size = cell_size
 
-    def render(self, sc):
+    def render(self, screen):
         for i in range(30):
             for j in range(30):
-                pygame.draw.rect(screen, pygame.Color(
-                    255, 255, 255), (i * self.cell_size + 1, j * self.cell_size, self.cell_size, self.cell_size), 1)
+                pygame.draw.rect(screen, self.color,
+                                 (i * self.cell_size + 1, j * self.cell_size, self.cell_size, self.cell_size), 1)

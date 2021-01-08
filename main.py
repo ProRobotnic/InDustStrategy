@@ -1,12 +1,11 @@
-from config import *
-from communications import *
 from buildings import *
-from menu import menu
+import menu
 import pygame
 
 pygame.init()
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-menu.stage1(screen)
+gl_screen = pygame.display.set_mode((WIDTH, HEIGHT)) # global screen to use in other files
+menu.stage1(gl_screen)
+
 # --- end ---
 pygame.quit()
