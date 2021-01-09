@@ -47,7 +47,7 @@ class Board:
 
 # example - left board + building board
 # uncomment for test
-pygame.init()
+"""pygame.init()
 
 buildings = []
 station1 = PowerStation("resources/power_station.jpg")
@@ -73,7 +73,7 @@ board_buildings.render()
 pygame.display.flip()
 
 running = True
-"""while running:
+while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
