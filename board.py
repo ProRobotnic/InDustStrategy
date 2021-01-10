@@ -22,8 +22,6 @@ class Board:
 
     def __init__(self, screen, cell_count, position_top_left, buildings=[]):
         self.screen = screen
-        self.left = 0
-        self.top = 0
         self.cell_count = cell_count
         self.position_top_left = position_top_left
         self.buildings = buildings
@@ -43,23 +41,27 @@ class Board:
                 count += 1
             self.cells.append(row)
 
-    def get_click(self, mouse_pos):
-        cell = self.get_cell(mouse_pos)
-        self.click(cell)
-    def get_cell(self, mouse_pos):
-        if self.left <= mouse_pos[0] <= self.left + self.cell_size_px * self.cell_count[0] * self.cell_size_px:
-            if self.top <= mouse_pos[1] <= self.top + self.cell_size_px * self.cell_count[1] * self.cell_size_px:
-                x = mouse_pos[0] - self.left
-                y = mouse_pos[1] - self.top
+    def get_cell_index(self, coordinate_x_y):   
+        if self.position_top_left[0] <= coordinate_x_y[0] <= self.position_top_left[0]+ self.cell_size_px * self.cell_count[0]:
+            if self.position_top_left[1] <= coordinate_x_y[1] <= self.position_top_left[1] + self.cell_size_px * self.cell_count[1]:
+                x = coordinate_x_y[0] - self.position_top_left[0]
+                y = coordinate_x_y[1] - self.position_top_left[1]
                 return (x // self.cell_size_px, y // self.cell_size_px)
             else:
                 return None
         else:
             return None
+    
+    def get_cell(self, coordinate_x_y):
+        index = self.get_cell_index(coordinate_x_y)
+        if index is None:
+            return None
+        return  self.cells[index[0]][index[1]]
 
 
 # example - left board + building board
 # uncomment for test
+'''
 pygame.init()
 
 buildings = []
@@ -91,15 +93,6 @@ while running:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             print(board_pole.get_cell(event.pos))
-            #board_pole.get_click(event.pos, )
-            #board_pole.cells[2][1].set_building(None)
-            x,y = event.pos
-            for i in range(board_pole.cell_count[0]):
-                for j in range(board_pole.cell_count[1]):
-                    c = board_pole.cells[i][j]
-                    
-                    if c.building is not None and c.building.image.get_rect().collidepoint(event.pos): 
-                        b = c.is_clicked()
-                        board_pole.cells[i][j].set_building(None)
 
 pygame.quit()
+'''
