@@ -26,6 +26,7 @@ class Board:
         self.position_top_left = position_top_left
         self.buildings = buildings
 
+
     def render(self):
         count = 0
         self.cells = []
@@ -40,14 +41,28 @@ class Board:
                 count += 1
             self.cells.append(row)
 
-    def get_click(self, mouse_pos):
-        cell = self.get_cell(mouse_pos)
-        self.click(cell)
+    def get_cell_index(self, coordinate_x_y):   
+        if self.position_top_left[0] <= coordinate_x_y[0] <= self.position_top_left[0]+ self.cell_size_px * self.cell_count[0]:
+            if self.position_top_left[1] <= coordinate_x_y[1] <= self.position_top_left[1] + self.cell_size_px * self.cell_count[1]:
+                x = coordinate_x_y[0] - self.position_top_left[0]
+                y = coordinate_x_y[1] - self.position_top_left[1]
+                return (x // self.cell_size_px, y // self.cell_size_px)
+            else:
+                return None
+        else:
+            return None
+    
+    def get_cell(self, coordinate_x_y):
+        index = self.get_cell_index(coordinate_x_y)
+        if index is None:
+            return None
+        return  self.cells[index[0]][index[1]]
 
 
 # example - left board + building board
 # uncomment for test
-"""pygame.init()
+'''
+pygame.init()
 
 buildings = []
 station1 = PowerStation("resources/power_station.jpg")
@@ -60,7 +75,6 @@ screen = pygame.display.set_mode(size)
 screen.fill((255, 255, 255))
 board_pole = Board(screen, (30, 30), (0, 0))
 board_buildings = Board(screen, (2, 2), (900, 150), buildings)
-
 
 board_pole.render()
 
@@ -78,15 +92,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-            #board_pole.get_click(event.pos, )
-            #board_pole.cells[2][1].set_building(None)
-            x,y = event.pos
-            for i in range(board_pole.cell_count[0]):
-                for j in range(board_pole.cell_count[1]):
-                    c = board_pole.cells[i][j]
-                    
-                    if c.building is not None and c.building.image.get_rect().collidepoint(event.pos): 
-                        b = c.is_clicked()
-                        board_pole.cells[i][j].set_building(None)
+            print(board_pole.get_cell(event.pos))
 
-pygame.quit()"""
+pygame.quit()
+'''
