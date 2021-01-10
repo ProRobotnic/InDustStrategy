@@ -1,18 +1,24 @@
 from config import *
-from buildings import *
+from building import *
 import menu
 import pygame
 from communications import *
-from feature_board import Board
+from board import Board
 import time
 
-game_board = Board()
+
+
 # -- Local variables --
 attack_to = 0
 event_type = 'menu'
 pygame.init()
 gl_screen = pygame.display.set_mode((WIDTH, HEIGHT))  # global screen to use in other files
 # ----- Buttons and PlainText init -----
+
+
+# init players boards
+player1_board_main = Board(gl_screen, (30,30), (0,0))
+player1_board_buildings= Board(gl_screen, (3,1), (750,75))
 
 # Common buttons
 left_button = menu.Button((521, 262), (25, 25), (30, 30, 200), "<")
@@ -114,7 +120,7 @@ while running:
 
     elif event_type == 'board':
         gl_screen.fill((245, 245, 245))
-        game_board = Board()
+        #game_board = Board()
         MoneyPT.set_text("$: " + str(money[turn]), (230, 255, 230))
         h_check = communications_check('heat', heat_list, turn)
         if h_check is None:
@@ -126,7 +132,10 @@ while running:
         ElectricityPT.set_text("E: " + str(e_check), (255, 255, 200))
         for elem in board_objects:
             elem.draw(gl_screen)
-        game_board.render(gl_screen)
+        player1_board_main.render()
+        player1_board_buildings.render()
+        event_type = 100 / 0 # у нас тут event_type == 'board' 2 раза - надо сделать для кнопок отдельное событие?
+
     elif event_type == 'before game':
         gl_screen.fill((245, 245, 245))
         for object in basic_choose_sc:
