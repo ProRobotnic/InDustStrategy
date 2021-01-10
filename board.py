@@ -22,9 +22,12 @@ class Board:
 
     def __init__(self, screen, cell_count, position_top_left, buildings=[]):
         self.screen = screen
+        self.left = 0
+        self.top = 0
         self.cell_count = cell_count
         self.position_top_left = position_top_left
         self.buildings = buildings
+
 
     def render(self):
         count = 0
@@ -43,11 +46,21 @@ class Board:
     def get_click(self, mouse_pos):
         cell = self.get_cell(mouse_pos)
         self.click(cell)
+    def get_cell(self, mouse_pos):
+        if self.left <= mouse_pos[0] <= self.left + self.cell_size_px * self.cell_count[0] * self.cell_size_px:
+            if self.top <= mouse_pos[1] <= self.top + self.cell_size_px * self.cell_count[1] * self.cell_size_px:
+                x = mouse_pos[0] - self.left
+                y = mouse_pos[1] - self.top
+                return (x // self.cell_size_px, y // self.cell_size_px)
+            else:
+                return None
+        else:
+            return None
 
 
 # example - left board + building board
 # uncomment for test
-"""pygame.init()
+pygame.init()
 
 buildings = []
 station1 = PowerStation("resources/power_station.jpg")
@@ -60,7 +73,6 @@ screen = pygame.display.set_mode(size)
 screen.fill((255, 255, 255))
 board_pole = Board(screen, (30, 30), (0, 0))
 board_buildings = Board(screen, (2, 2), (900, 150), buildings)
-
 
 board_pole.render()
 
@@ -78,6 +90,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
+            print(board_pole.get_cell(event.pos))
             #board_pole.get_click(event.pos, )
             #board_pole.cells[2][1].set_building(None)
             x,y = event.pos
@@ -89,4 +102,4 @@ while running:
                         b = c.is_clicked()
                         board_pole.cells[i][j].set_building(None)
 
-pygame.quit()"""
+pygame.quit()
