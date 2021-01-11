@@ -45,7 +45,7 @@ class Cell:
 
         self.board.screen.blit(
             img, [self.cell_top_left_x_y[0], self.cell_top_left_x_y[1]])
-        pygame.display.update()
+        #pygame.display.update()
 
     def set_background(self):
         background_color = pygame.Color("black")

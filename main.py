@@ -10,7 +10,7 @@ import time
 
 # -- Local variables --
 attack_to = 0
-event_type = 'menu'
+event_type = 'win screen'
 pygame.init()
 gl_screen = pygame.display.set_mode((WIDTH, HEIGHT))  # global screen to use in other files
 # ----- Buttons and PlainText init -----
@@ -30,6 +30,9 @@ do_smthB = menu.Button((476, 300), (200, 30), (30, 30, 200), "В атаку!")
 basic_choose_sc = [left_button, right_button, back_b, desc_pmPT, plus_minusPT, do_smthB]
 # Next turn buttons
 click_on_me_b = menu.Button((276, 312), (600, 100), (200, 30, 30), "Нажми на меня, чтобы начать следующий ход")
+# winscreen buttons
+winB = menu.Button((451, 350), (250, 30), (200, 30, 30), "Вернуться в меню")
+winPt = menu.PlainText((376, 250), (400, 60), (100, 15, 15), "Игрок n - победитель!")
 # menu buttons
 button1 = menu.Button((476, 250), (200, 35), (200, 30, 30), "  Играть  ")
 button2 = menu.Button((476, 300), (200, 35), (200, 30, 30), " Правила ")
@@ -110,6 +113,9 @@ while running:
                 pass
             if back_b.is_clicked(event):
                 event_type = 'board'
+        elif event_type == 'win screen':
+            if winB.is_clicked(event):
+                event_type = 'menu'
 
     # --- draws ---
 
@@ -134,7 +140,7 @@ while running:
             elem.draw(gl_screen)
         player1_board_main.render()
         player1_board_buildings.render()
-        event_type = 100 / 0 # у нас тут event_type == 'board' 2 раза - надо сделать для кнопок отдельное событие?
+        #event_type = 100 / 0 # у нас тут event_type == 'board' 2 раза - надо сделать для кнопок отдельное событие?
 
     elif event_type == 'before game':
         gl_screen.fill((245, 245, 245))
@@ -156,6 +162,12 @@ while running:
         do_smthB.set_text("В атаку!")
         for object in basic_choose_sc:
             object.draw(gl_screen)
+    elif event_type == 'win screen':
+        gl_screen.fill((245, 245, 245))
+        winB.draw(gl_screen)
+        winPt.set_text("Игрок " + str(turn + 1) + ' - победитель!')
+        winPt.draw(gl_screen)
+
 
     pygame.display.flip()
 
