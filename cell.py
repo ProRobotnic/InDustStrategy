@@ -58,7 +58,7 @@ class Cell:
                               self.cell_top_left_x_y[1]),
                              (self.board.cell_size_px, self.board.cell_size_px)
                          ), 2)
-        pygame.display.flip()
+
 
     def is_clicked(self):
         return pygame.mouse.get_pressed()[0] and self.building.image.get_rect().collidepoint(pygame.mouse.get_pos())

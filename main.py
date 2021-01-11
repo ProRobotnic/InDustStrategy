@@ -6,19 +6,21 @@ from communications import *
 from board import Board
 import time
 
-
-
 # -- Local variables --
 attack_to = 0
-event_type = 'win screen'
+event_type = 'menu'
 pygame.init()
+
 gl_screen = pygame.display.set_mode((WIDTH, HEIGHT))  # global screen to use in other files
+board_main = Board(gl_screen, (30, 30), (0, 0))
+board_buildings = Board(gl_screen, (2, 8), (900, 150), buildings)
+
 # ----- Buttons and PlainText init -----
 
 
 # init players boards
-player1_board_main = Board(gl_screen, (30,30), (0,0))
-player1_board_buildings= Board(gl_screen, (3,1), (750,75))
+player1_board_main = Board(gl_screen, (30, 30), (0, 0))
+player1_board_buildings = Board(gl_screen, (3, 1), (750, 75))
 
 # Common buttons
 left_button = menu.Button((521, 262), (25, 25), (30, 30, 200), "<")
@@ -87,13 +89,33 @@ while running:
         elif event_type == 'board':
             if next_turn_b.is_clicked(event):
                 event_type = 'nextturn'
-            if attack_button.is_clicked(event):
+            elif attack_button.is_clicked(event):
                 event_type = 'attack'
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+
+                board_buildings.get_mouse_click(event.pos)
+                board_main.get_mouse_click(event.pos)
+                # copy building to main board if building not empty
+                if board_main.cell_selected is not None and \
+                        board_main.cell_selected.building is None and \
+                        board_buildings.cell_selected is not None and \
+                        board_buildings.cell_selected.building is not None:
+                    if buildings_db[buildings.index(board_buildings.cell_selected.building) - 1][2] <= money[turn]:
+                        board_main.cell_selected.set_building(board_buildings.cell_selected.building)
+                        x, y = board_main.cell_selected.position_index
+                        mas[turn][y][x] = buildings.index(board_buildings.cell_selected.building)
+                        money[turn] -= buildings_db[buildings.index(board_buildings.cell_selected.building) - 1][2]
+                pygame.display.flip()
         elif event_type == 'nextturn':
             if click_on_me_b.is_clicked(event):
-                global turn
+                from config import turn
+
                 turn += 1
                 turn = turn % players_amount
+                e_check = coms_consuption('electricity', electricity_list, turn)
+                m_check = coms_consuption('money', electricity_list, turn)
+                if e_check * -1 >= 0:
+                    money[turn] += m_check
                 event_type = 'board'
         elif event_type == 'attack':
             if left_button.is_clicked(event):
@@ -126,21 +148,22 @@ while running:
 
     elif event_type == 'board':
         gl_screen.fill((245, 245, 245))
-        #game_board = Board()
         MoneyPT.set_text("$: " + str(money[turn]), (230, 255, 230))
-        h_check = communications_check('heat', heat_list, turn)
+        h_check = coms_consuption('heat', heat_list, turn) * -1
         if h_check is None:
             h_check = 0
         HeatPT.set_text("H: " + str(h_check))
-        e_check = communications_check('electricity', electricity_list, turn)
+        e_check = coms_consuption('electricity', electricity_list, turn) * -1
         if e_check is None:
             e_check = 0
         ElectricityPT.set_text("E: " + str(e_check), (255, 255, 200))
         for elem in board_objects:
             elem.draw(gl_screen)
-        player1_board_main.render()
-        player1_board_buildings.render()
-        #event_type = 100 / 0 # у нас тут event_type == 'board' 2 раза - надо сделать для кнопок отдельное событие?
+        board_buildings.render()
+        board_main.render()
+        board_main.render_from_mas(turn)
+
+        # event_type = 100 / 0 # у нас тут event_type == 'board' 2 раза - надо сделать для кнопок отдельное событие?
 
     elif event_type == 'before game':
         gl_screen.fill((245, 245, 245))
@@ -167,7 +190,6 @@ while running:
         winB.draw(gl_screen)
         winPt.set_text("Игрок " + str(turn + 1) + ' - победитель!')
         winPt.draw(gl_screen)
-
 
     pygame.display.flip()
 
