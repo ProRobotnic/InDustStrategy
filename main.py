@@ -74,7 +74,7 @@ while running:
         elif event_type == 'before game':
             if left_button.is_clicked(event):
                 players_amount -= 1
-                if attack_to < 0:
+                if players_amount <= 1:
                     players_amount = 4
             if right_button.is_clicked(event):
                 players_amount += 1

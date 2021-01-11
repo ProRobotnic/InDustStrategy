@@ -13,5 +13,5 @@ heat_list = [11, 12]
 electricity_list = [1, 2]
 # Screen settings
 WIDTH = 1152
-FPS = 60
+FPS = 360
 HEIGHT = 725
