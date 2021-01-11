@@ -50,14 +50,15 @@ class Cell:
     def set_background(self):
         background_color = pygame.Color("black")
         if self.is_selected:
-            background_color = pygame.Color("white")
+            background_color = pygame.Color("red")
         pygame.draw.rect(self.board.screen,
                          background_color,
                          (
                              (self.cell_top_left_x_y[0],
                               self.cell_top_left_x_y[1]),
                              (self.board.cell_size_px, self.board.cell_size_px)
-                         ), 1)
+                         ), 2)
+        pygame.display.flip()
 
     def is_clicked(self):
         return pygame.mouse.get_pressed()[0] and self.building.image.get_rect().collidepoint(pygame.mouse.get_pos())
