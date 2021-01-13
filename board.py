@@ -1,82 +1,88 @@
 import os
 import sys
-from building import *
 import pygame
-from cell import *
-from communications import my_copy
-
+from communications import my_copy, buildings_db
+import pygame
 
 class Board:
-    # consts
-    color = pygame.Color(0, 0, 0)
-    cell_size_px = 24
-    screen = None
-
-    # properties
-    cell_count = (1, 1)  # cells count on board by x and y
-    cell_selected = None
-    position_top_left = (0, 0)  # board position
-    buildings = []
-
-    # calculating props
-    cells = None  # cells on board
-
-    def __init__(self, screen, cell_count, position_top_left, buildings=[]):
+    # создание поля
+    def __init__(self, screen, width, height):
+        self.width = width
+        self.height = height
         self.screen = screen
-        self.cell_count = cell_count
-        self.position_top_left = position_top_left
-        self.buildings = buildings
+        self.board = [[0] * width for _ in range(height)]
+        self.left = 1
+        self.top = 1
+        self.cell_size = 24
+        self.click = (0, 0)
+        self.active_cell = (-1, -1)
+        self.active_color = 'red'
+        self.cell_color = (100, 100, 100)
+        self.can_be_deleted_from = True
 
-    def render_from_mas(self, turn):
-        builds = mas[turn]
-        for i in range(len(builds)):
-            for j in range(len(builds[i])):
-                print(builds[i][j])
-                self.cells[j][i].set_building(buildings[builds[i][j]])
+    # настройка внешнего вида
+    def set_view(self, left, top, cell_size):
+        self.left = left
+        self.top = top
+        self.cell_size = cell_size
 
-    def render(self):
-        count = 0
-        self.cells = []
-        for i in range(self.cell_count[0]):
+    def cell_clicked(self, cord, activate_or_deactivate='activate'):
+        if activate_or_deactivate == 'activate':
+            x_c, y_c = cord
+            cs = self.cell_size
+            t = self.top
+            l = self.left
+            for y in range(self.height):
+                for x in range(self.width):
+                    if (l + cs * x <= x_c and x_c < l + cs * x + cs) and (
+                            t + cs * y <= y_c and y_c < t + cs * y + cs):
+                        self.active_cell = (x, y)
+                        return (True)
+        elif activate_or_deactivate == 'deactivate':
+            self.active_cell = (-1, -1)
+
+    def render(self, pole=[], buildings_visible=True):
+        if pole != []:
+            self.board = pole
+        self.out = None
+        for y in range(self.height):
+            for x in range(self.width):
+                pygame.draw.rect(self.screen, self.cell_color, (
+                    (self.left + self.cell_size * x, self.top + self.cell_size * y), (self.cell_size, self.cell_size)),
+                                 1)
+                if self.board[y][x] != 0 and buildings_visible:
+                    try:
+                        image = pygame.image.load("buildings/" + str(self.board[y][x]) + ".jpg")
+                        img = pygame.transform.scale(
+                            image, (self.cell_size - 2, self.cell_size - 2))
+                        self.screen.blit(
+                            img,
+                            (self.left + self.cell_size * x + 1, self.top + self.cell_size * y + 1))
+                    except Exception:
+                        try:
+                            image = pygame.image.load("buildings/default.jpg")
+                            img = pygame.transform.scale(
+                                image, (self.cell_size - 2, self.cell_size - 2))
+                            self.screen.blit(
+                                img,
+                                (self.left + self.cell_size * x + 1, self.top + self.cell_size * y + 1))
+                        except Exception:
+                            pass
+        if self.active_cell != (-1, -1):
+            x, y = self.active_cell
+            pygame.draw.rect(self.screen, self.active_color, (
+                (self.left + self.cell_size * x, self.top + self.cell_size * y), (self.cell_size, self.cell_size)), 1)
+
+
+    def choosing_table(self):
+        builds = []
+        for i in range(self.height):
             row = []
-            for j in range(self.cell_count[1]):
-                building = None
-                if len(self.buildings) - 1 > count:
-                    building = self.buildings[count]
-                cell = Cell(self, (i, j), False, building)
-                row.append(cell)
-                count += 1
-            self.cells.append(row)
-
-    def get_cell_index(self, coordinate_x_y):
-        if self.position_top_left[0] <= coordinate_x_y[0] <= self.position_top_left[0] + self.cell_size_px * \
-                self.cell_count[0]:
-            if self.position_top_left[1] <= coordinate_x_y[1] <= self.position_top_left[1] + self.cell_size_px * \
-                    self.cell_count[1]:
-                x = coordinate_x_y[0] - self.position_top_left[0]
-                y = coordinate_x_y[1] - self.position_top_left[1]
-                return (x // self.cell_size_px, y // self.cell_size_px)
-            else:
-                return None
-        else:
-            return None
-
-    def get_cell(self, coordinate_x_y):
-        index = self.get_cell_index(coordinate_x_y)
-        if index is None:
-            return None
-        try:
-            return self.cells[index[0]][index[1]]
-        except Exception:
-            return None
-
-    def get_mouse_click(self, coordinate_x_y):
-        cell = self.get_cell(coordinate_x_y)
-        if cell is not None:
-            if self.cell_selected is not None:
-                self.cell_selected.set_selected(False)
-
-            self.cell_selected = cell
-            self.cell_selected.set_selected(True)
-
-
+            for j in range(self.width):
+                try:
+                    row.append(buildings_db[i * self.width + j][0])
+                except Exception:
+                    row.append(0)
+            builds.append(row)
+        self.board = builds
+        self.can_be_deleted_from = False

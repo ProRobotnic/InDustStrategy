@@ -10,10 +10,6 @@ vertical_borders = pygame.sprite.Group()
 
 # class Border(pygame.sprite.Sprite):
 
-
-
-
-
 class PlainText(object):
     def __init__(self, position, size, color, text):
         self.image = pygame.Surface(size)

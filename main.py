@@ -1,5 +1,4 @@
 from config import *
-from building import *
 import menu
 import pygame
 from communications import *
@@ -10,17 +9,16 @@ import time
 attack_to = 0
 event_type = 'menu'
 pygame.init()
-
+attack_was = 0
 gl_screen = pygame.display.set_mode((WIDTH, HEIGHT))  # global screen to use in other files
-board_main = Board(gl_screen, (30, 30), (0, 0))
-board_buildings = Board(gl_screen, (2, 8), (900, 150), buildings)
 
 # ----- Buttons and PlainText init -----
-
-
+c_turn = turn
 # init players boards
-player1_board_main = Board(gl_screen, (30, 30), (0, 0))
-player1_board_buildings = Board(gl_screen, (3, 1), (750, 75))
+main_board = Board(gl_screen, 30, 30)
+choosing_board = Board(gl_screen, 7, 1)
+choosing_board.set_view(900, 150, 32)
+choosing_board.choosing_table()
 
 # Common buttons
 left_button = menu.Button((521, 262), (25, 25), (30, 30, 200), "<")
@@ -32,13 +30,16 @@ do_smthB = menu.Button((476, 300), (200, 30), (30, 30, 200), "В атаку!")
 basic_choose_sc = [left_button, right_button, back_b, desc_pmPT, plus_minusPT, do_smthB]
 # Next turn buttons
 click_on_me_b = menu.Button((276, 312), (600, 100), (200, 30, 30), "Нажми на меня, чтобы начать следующий ход")
+# Attack screen buttons
+MortarsPT = menu.PlainText((750, 10), (300, 30), (135, 135, 135), "Количество атак: 0")
+atck_sc = [MortarsPT, back_b]
 # winscreen buttons
 winB = menu.Button((451, 350), (250, 30), (200, 30, 30), "Вернуться в меню")
 winPt = menu.PlainText((376, 250), (400, 60), (100, 15, 15), "Игрок n - победитель!")
 # menu buttons
 button1 = menu.Button((476, 250), (200, 35), (200, 30, 30), "  Играть  ")
-button2 = menu.Button((476, 300), (200, 35), (200, 30, 30), " Правила ")
-button3 = menu.Button((476, 350), (200, 35), (200, 30, 30), "Настройки")
+button2 = menu.Button((476, 300), (0, 35), (200, 30, 30), " Правила ")
+button3 = menu.Button((476, 350), (0, 35), (200, 30, 30), "Настройки")
 button4 = menu.Button((476, 400), (200, 35), (200, 30, 30), "  Выход  ")
 menu_buttons = [button1, button2, button3, button4]
 # game screen buttons
@@ -46,7 +47,7 @@ next_turn_b = menu.Button((952, 690), (200, 30), (200, 30, 30), "Следующ�
 attack_button = menu.Button((752, 690), (150, 30), (200, 30, 30), "Атаковать")
 MoneyPT = menu.PlainText((750, 10), (115, 30), (30, 135, 30), "$:")
 ElectricityPT = menu.PlainText((875, 10), (115, 30), (200, 200, 0), "E:")
-HeatPT = menu.PlainText((1000, 10), (115, 30), (240, 30, 30), "H:")
+HeatPT = menu.PlainText((1000, 10), (0, 30), (240, 30, 30), "H:")
 board_objects = [ElectricityPT, HeatPT, MoneyPT, next_turn_b, attack_button]
 
 # -- Main game cycle --
@@ -92,30 +93,36 @@ while running:
             elif attack_button.is_clicked(event):
                 event_type = 'attack'
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                main_board.cell_clicked(event.pos, 'activate')
+                choosing_board.cell_clicked(event.pos, 'activate')
+                main_board.board = mas[turn]
+                if choosing_board.active_cell != (-1, -1):
+                    i, j = choosing_board.active_cell
+                    if main_board.active_cell != (-1, -1) and buildings_db[choosing_board.board[j][i] - 1][2] <= money[
+                        turn] and mas[turn][i][j] == 0:
+                        if main_board.cell_clicked(event.pos) == 1:
+                            y, x = main_board.active_cell
+                            mas[turn][x][y] = choosing_board.board[j][i]
+                            money[turn] -= buildings_db[choosing_board.board[j][i] - 1][2]
+                            print(x, y)
 
-                board_buildings.get_mouse_click(event.pos)
-                board_main.get_mouse_click(event.pos)
-                # copy building to main board if building not empty
-                if board_main.cell_selected is not None and \
-                        board_main.cell_selected.building is None and \
-                        board_buildings.cell_selected is not None and \
-                        board_buildings.cell_selected.building is not None:
-                    if buildings_db[buildings.index(board_buildings.cell_selected.building) - 1][2] <= money[turn]:
-                        board_main.cell_selected.set_building(board_buildings.cell_selected.building)
-                        x, y = board_main.cell_selected.position_index
-                        mas[turn][y][x] = buildings.index(board_buildings.cell_selected.building)
-                        money[turn] -= buildings_db[buildings.index(board_buildings.cell_selected.building) - 1][2]
-                pygame.display.flip()
+
+        elif event_type == 'attack screen':
+            if back_b.is_clicked(event):
+                event_type = 'attack'
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                main_board.cell_clicked(event.pos, 'activate')
+                if attacks_count > 0 and main_board.active_cell != (-1, -1):
+                    mas[attack_to][main_board.active_cell[1]][main_board.active_cell[0]] = 0
+                    attack_was += 1
         elif event_type == 'nextturn':
             if click_on_me_b.is_clicked(event):
-                from config import turn
-
                 turn += 1
                 turn = turn % players_amount
                 e_check = coms_consuption('electricity', electricity_list, turn)
                 m_check = coms_consuption('money', electricity_list, turn)
                 if e_check * -1 >= 0:
-                    money[turn] += m_check
+                    money[turn] += m_check * -1
                 event_type = 'board'
         elif event_type == 'attack':
             if left_button.is_clicked(event):
@@ -131,8 +138,7 @@ while running:
                 if attack_to > players_amount:
                     attack_to %= players_amount
             if do_smthB.is_clicked(event):
-                print('conf_attack is clicked.')
-                pass
+                event_type = 'attack screen'
             if back_b.is_clicked(event):
                 event_type = 'board'
         elif event_type == 'win screen':
@@ -145,6 +151,14 @@ while running:
         gl_screen.fill((230, 230, 230))
         for button in menu_buttons:
             button.draw(gl_screen)
+
+    elif event_type == 'attack screen':
+        gl_screen.fill((245, 245, 245))
+        main_board.render(mas[attack_to], False)
+        for elem in atck_sc:
+            elem.draw(gl_screen)
+        attacks_count = count(7, turn) - attack_was
+        MortarsPT.set_text("Количество атак: " + str(attacks_count))
 
     elif event_type == 'board':
         gl_screen.fill((245, 245, 245))
@@ -159,11 +173,9 @@ while running:
         ElectricityPT.set_text("E: " + str(e_check), (255, 255, 200))
         for elem in board_objects:
             elem.draw(gl_screen)
-        board_buildings.render()
-        board_main.render()
-        board_main.render_from_mas(turn)
+        main_board.render(mas[turn])
+        choosing_board.render()
 
-        # event_type = 100 / 0 # у нас тут event_type == 'board' 2 раза - надо сделать для кнопок отдельное событие?
 
     elif event_type == 'before game':
         gl_screen.fill((245, 245, 245))
@@ -172,9 +184,12 @@ while running:
         do_smthB.set_text("Подтвердть")
         desc_pmPT.set_text('Выберите количество игроков:')
         plus_minusPT.set_text(players_amount)
+
     elif event_type == 'nextturn':
         gl_screen.fill((245, 245, 245))
         click_on_me_b.draw(gl_screen)
+        attack_was = 0
+
     elif event_type == 'attack':
         desc_pmPT.set_text('Бомбим этого игрока:')
         gl_screen.fill((245, 245, 245))
@@ -185,12 +200,17 @@ while running:
         do_smthB.set_text("В атаку!")
         for object in basic_choose_sc:
             object.draw(gl_screen)
+
     elif event_type == 'win screen':
         gl_screen.fill((245, 245, 245))
         winB.draw(gl_screen)
         winPt.set_text("Игрок " + str(turn + 1) + ' - победитель!')
         winPt.draw(gl_screen)
-
+    for i in mas[turn]:
+        for j in i:
+            if j == win_condition:
+                event_type = 'win screen'
+                reset()
     pygame.display.flip()
 
     # --- FPS ---
@@ -199,3 +219,4 @@ while running:
 
 # --- end ---
 pygame.quit()
+

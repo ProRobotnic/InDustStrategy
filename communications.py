@@ -108,3 +108,11 @@ def is_void_nearby(cord, listt):
     if cord[1] >= 1:
         sides.append(4)
     return sides
+
+def count(id, turn):
+    cou = 0
+    for i in mas[turn]:
+        for j in i:
+            if j == id:
+                cou += 1
+    return cou
