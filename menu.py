@@ -9,6 +9,18 @@ vertical_borders = pygame.sprite.Group()
 # --- class ----
 
 # class Border(pygame.sprite.Sprite):
+class Picture(object):
+    def __init__(self, position, size, path):
+        self.pos = position
+        self.size = size
+        image = pygame.image.load(str(path))
+        self.img = pygame.transform.scale(
+            image, (self.size[0], self.size[1]))
+
+    def draw(self, screen):
+        x, y = self.pos
+        screen.blit(self.img, (x, y))
+
 
 class PlainText(object):
     def __init__(self, position, size, color, text):
@@ -39,6 +51,7 @@ class PlainText(object):
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
+
 
 class Button(PlainText):
     def is_clicked(self, event):

@@ -20,6 +20,13 @@ choosing_board = Board(gl_screen, 7, 1)
 choosing_board.set_view(900, 150, 32)
 choosing_board.choosing_table()
 
+# menu buttons
+menu_pic = menu.Picture((0, 0), (WIDTH, HEIGHT), "resources/MainMenuPhoto.png")
+button1 = menu.Button((476, 250), (200, 35), (200, 30, 30), "  Играть  ")
+button2 = menu.Button((476, 300), (0, 35), (200, 30, 30), " Правила ")
+button3 = menu.Button((476, 350), (0, 35), (200, 30, 30), "Настройки")
+button4 = menu.Button((476, 400), (200, 35), (200, 30, 30), "  Выход  ")
+menu_buttons = [menu_pic, button1, button2, button3, button4]
 # Common buttons
 left_button = menu.Button((521, 262), (25, 25), (30, 30, 200), "<")
 plus_minusPT = menu.PlainText((556, 262), (30, 25), (140, 140, 140), "0")
@@ -27,7 +34,7 @@ right_button = menu.Button((596, 262), (25, 25), (30, 30, 200), ">")
 back_b = menu.Button((952, 690), (200, 30), (200, 30, 30), "Назад")
 desc_pmPT = menu.PlainText((351, 220), (450, 30), (140, 140, 140), "Бомбим этого игрока:")
 do_smthB = menu.Button((476, 300), (200, 30), (30, 30, 200), "В атаку!")
-basic_choose_sc = [left_button, right_button, back_b, desc_pmPT, plus_minusPT, do_smthB]
+basic_choose_sc = [menu_pic, left_button, right_button, back_b, desc_pmPT, plus_minusPT, do_smthB]
 # Next turn buttons
 click_on_me_b = menu.Button((276, 312), (600, 100), (200, 30, 30), "Нажми на меня, чтобы начать следующий ход")
 # Attack screen buttons
@@ -36,12 +43,6 @@ atck_sc = [MortarsPT, back_b]
 # winscreen buttons
 winB = menu.Button((451, 350), (250, 30), (200, 30, 30), "Вернуться в меню")
 winPt = menu.PlainText((376, 250), (400, 60), (100, 15, 15), "Игрок n - победитель!")
-# menu buttons
-button1 = menu.Button((476, 250), (200, 35), (200, 30, 30), "  Играть  ")
-button2 = menu.Button((476, 300), (0, 35), (200, 30, 30), " Правила ")
-button3 = menu.Button((476, 350), (0, 35), (200, 30, 30), "Настройки")
-button4 = menu.Button((476, 400), (200, 35), (200, 30, 30), "  Выход  ")
-menu_buttons = [button1, button2, button3, button4]
 # game screen buttons
 next_turn_b = menu.Button((952, 690), (200, 30), (200, 30, 30), "Следующий ход")
 attack_button = menu.Button((752, 690), (150, 30), (200, 30, 30), "Атаковать")
