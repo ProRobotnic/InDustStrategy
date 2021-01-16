@@ -21,31 +21,36 @@ choosing_board.set_view(900, 150, 32)
 choosing_board.choosing_table()
 
 # menu buttons
+logo_pic = menu.Picture((501, 15), (150, 150), 'resources/logo.jpg')
+buttons_pic = menu.Picture((371, 235), (410, 325), 'resources/button_holder.png')
 menu_pic = menu.Picture((0, 0), (WIDTH, HEIGHT), "resources/MainMenuPhoto.png")
-button1 = menu.Button((476, 250), (200, 35), (200, 30, 30), "  Играть  ")
-button2 = menu.Button((476, 300), (0, 35), (200, 30, 30), " Правила ")
-button3 = menu.Button((476, 350), (0, 35), (200, 30, 30), "Настройки")
-button4 = menu.Button((476, 400), (200, 35), (200, 30, 30), "  Выход  ")
-menu_buttons = [menu_pic, button1, button2, button3, button4]
+button1 = menu.PictureButton((476, 300), (200, 35), "  Играть  ", "resources/menu_button.png")
+button2 = menu.PictureButton((476, 350), (200, 35),  " Правила ", "resources/menu_button.png")
+button3 = menu.PictureButton((476, 400), (200, 35),  "Настройки", "resources/menu_button.png")
+button4 = menu.PictureButton((476, 450), (200, 35),  "  Выход  ", "resources/menu_button.png")
+menu_buttons = [menu_pic, logo_pic, buttons_pic, button1, button2, button3, button4]
 # Common buttons
-left_button = menu.Button((521, 262), (25, 25), (30, 30, 200), "<")
-plus_minusPT = menu.PlainText((556, 262), (30, 25), (140, 140, 140), "0")
-right_button = menu.Button((596, 262), (25, 25), (30, 30, 200), ">")
-back_b = menu.Button((952, 690), (200, 30), (200, 30, 30), "Назад")
-desc_pmPT = menu.PlainText((351, 220), (450, 30), (140, 140, 140), "Бомбим этого игрока:")
-do_smthB = menu.Button((476, 300), (200, 30), (30, 30, 200), "В атаку!")
-basic_choose_sc = [menu_pic, left_button, right_button, back_b, desc_pmPT, plus_minusPT, do_smthB]
+left_button = menu.Button((521, 362), (25, 25), (30, 30, 200), "<")
+plus_minusPT = menu.PlainText((556, 362), (30, 25), (140, 140, 140), "0")
+right_button = menu.Button((596, 362), (25, 25), (30, 30, 200), ">")
+back_b = menu.PictureButton((952, 690), (200, 30), "Назад", "resources/menu_button.png")
+desc_pmPT = menu.PicturePlainText((406, 320), (350, 30), "Бомбим этого игрока:", "resources/menu_button.png")
+do_smthB = menu.PictureButton((476, 465), (200, 30), "В атаку!", "resources/menu_button.png")
+basic_choose_sc = [buttons_pic, left_button, right_button, back_b, desc_pmPT, plus_minusPT, do_smthB]
 # Next turn buttons
 click_on_me_b = menu.Button((276, 312), (600, 100), (200, 30, 30), "Нажми на меня, чтобы начать следующий ход")
 # Attack screen buttons
+attack_pic = menu.Picture((0, 0), (WIDTH, HEIGHT), "resources/8884757x8m.jpg")
 MortarsPT = menu.PlainText((750, 10), (300, 30), (135, 135, 135), "Количество атак: 0")
 atck_sc = [MortarsPT, back_b]
-# winscreen buttons
-winB = menu.Button((451, 350), (250, 30), (200, 30, 30), "Вернуться в меню")
+# winscreen buttons\
+win_pic = menu.Picture((0, 0), (WIDTH, HEIGHT), "resources/win.png")
+winB = menu.PictureButton((451, 350), (250, 30), "Вернуться в меню", "resources/menu_button.png")
 winPt = menu.PlainText((376, 250), (400, 60), (100, 15, 15), "Игрок n - победитель!")
 # game screen buttons
-next_turn_b = menu.Button((952, 690), (200, 30), (200, 30, 30), "Следующий ход")
-attack_button = menu.Button((752, 690), (150, 30), (200, 30, 30), "Атаковать")
+next_turn_pic = menu.Picture((0, 0), (WIDTH, HEIGHT), "resources/next_turn.jpg")
+next_turn_b = menu.PictureButton((952, 690), (200, 30), "Следующий ход", "resources/menu_button.png")
+attack_button = menu.PictureButton((752, 690), (150, 30), "Атаковать", "resources/menu_button.png")
 MoneyPT = menu.PlainText((750, 10), (115, 30), (30, 135, 30), "$:")
 ElectricityPT = menu.PlainText((875, 10), (115, 30), (200, 200, 0), "E:")
 HeatPT = menu.PlainText((1000, 10), (0, 30), (240, 30, 30), "H:")
@@ -180,14 +185,16 @@ while running:
 
     elif event_type == 'before game':
         gl_screen.fill((245, 245, 245))
+        menu_pic.draw(gl_screen)
         for object in basic_choose_sc:
             object.draw(gl_screen)
-        do_smthB.set_text("Подтвердть")
+        do_smthB.set_text("Подтвердть", 'white')
         desc_pmPT.set_text('Выберите количество игроков:')
         plus_minusPT.set_text(players_amount)
 
     elif event_type == 'nextturn':
         gl_screen.fill((245, 245, 245))
+        next_turn_pic.draw(gl_screen)
         click_on_me_b.draw(gl_screen)
         attack_was = 0
 
@@ -199,11 +206,13 @@ while running:
         attack_to %= players_amount
         plus_minusPT.set_text(str(attack_to + 1))
         do_smthB.set_text("В атаку!")
+        attack_pic.draw(gl_screen)
         for object in basic_choose_sc:
             object.draw(gl_screen)
 
     elif event_type == 'win screen':
         gl_screen.fill((245, 245, 245))
+        menu_pic.draw
         winB.draw(gl_screen)
         winPt.set_text("Игрок " + str(turn + 1) + ' - победитель!')
         winPt.draw(gl_screen)
