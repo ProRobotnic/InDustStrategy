@@ -104,13 +104,12 @@ while running:
                 main_board.board = mas[turn]
                 if choosing_board.active_cell != (-1, -1):
                     i, j = choosing_board.active_cell
+                    y, x = main_board.active_cell
                     if main_board.active_cell != (-1, -1) and buildings_db[choosing_board.board[j][i] - 1][2] <= money[
-                        turn] and mas[turn][i][j] == 0:
-                        if main_board.cell_clicked(event.pos) == 1:
-                            y, x = main_board.active_cell
+                        turn] and mas[turn][x][y] == 0 and main_board.cell_clicked(event.pos) == 1:
                             mas[turn][x][y] = choosing_board.board[j][i]
                             money[turn] -= buildings_db[choosing_board.board[j][i] - 1][2]
-                            print(x, y)
+
 
 
         elif event_type == 'attack screen':
