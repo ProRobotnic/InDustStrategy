@@ -25,8 +25,8 @@ logo_pic = menu.Picture((501, 15), (150, 150), 'resources/logo.jpg')
 buttons_pic = menu.Picture((371, 235), (410, 325), 'resources/button_holder.png')
 menu_pic = menu.Picture((0, 0), (WIDTH, HEIGHT), "resources/MainMenuPhoto.png")
 button1 = menu.PictureButton((476, 300), (200, 35), "  Играть  ", "resources/menu_button.png")
-button2 = menu.PictureButton((476, 350), (200, 35),  " Правила ", "resources/menu_button.png")
-button3 = menu.PictureButton((476, 400), (200, 35),  "Настройки", "resources/menu_button.png")
+button2 = menu.PictureButton((476, 350), (0, 35),  " Правила ", "resources/menu_button.png")
+button3 = menu.PictureButton((476, 400), (0, 35),  "Настройки", "resources/menu_button.png")
 button4 = menu.PictureButton((476, 450), (200, 35),  "  Выход  ", "resources/menu_button.png")
 menu_buttons = [menu_pic, logo_pic, buttons_pic, button1, button2, button3, button4]
 # Common buttons
