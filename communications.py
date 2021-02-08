@@ -19,7 +19,7 @@ communications_db = cur.execute("""SELECT * FROM communications ORDER BY id""").
 
 
 # Counting resourse cosuption of active buildings (connected to power)
-def coms_consuption(name, com_id_list, player):
+def coms_consuption(name, com_id_list, player, coof=1):
     global mas
     type_communication = 2
     for i in range(len(communications_db)):
@@ -37,6 +37,8 @@ def coms_consuption(name, com_id_list, player):
                     com_consup = buildings_db[mas[player][i][j] - 1][type_communication]
                     if com_consup is None:
                         com_consup = 0
+                    if com_consup > 0:
+                        com_consup = int(com_consup * coof)
                     counter += com_consup
         return counter
 

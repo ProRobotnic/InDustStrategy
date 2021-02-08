@@ -1,6 +1,7 @@
 from config import *
 import menu
 import pygame
+from Objects import *
 from communications import *
 from board import Board
 import time
@@ -12,12 +13,16 @@ pygame.init()
 attack_was = 0
 gl_screen = pygame.display.set_mode((WIDTH, HEIGHT))  # global screen to use in other files
 
+
+#######################################################################################################################
+
+
 # ----- Buttons and PlainText init -----
 c_turn = turn
 # init players boards
 main_board = Board(gl_screen, 30, 30)
-choosing_board = Board(gl_screen, 7, 1)
-choosing_board.set_view(900, 150, 32)
+choosing_board = Board(gl_screen, 9, 3, (40, 240, 50))
+choosing_board.set_view(WIDTH - choosing_board.width * 32 - 37, 152, 32)
 choosing_board.choosing_table()
 
 # menu buttons
@@ -48,13 +53,21 @@ win_pic = menu.Picture((0, 0), (WIDTH, HEIGHT), "resources/win.png")
 winB = menu.PictureButton((451, 350), (250, 30), "Вернуться в меню", "resources/menu_button.png")
 winPt = menu.PlainText((376, 250), (400, 60), (100, 15, 15), "Игрок n - победитель!")
 # game screen buttons
+choosing_board_sprite = menu.Picture((720, 100), (428, 256), "resources/pager.png")
 next_turn_pic = menu.Picture((0, 0), (WIDTH, HEIGHT), "resources/next_turn.jpg")
 next_turn_b = menu.PictureButton((952, 690), (200, 30), "Следующий ход", "resources/menu_button.png")
 attack_button = menu.PictureButton((752, 690), (150, 30), "Атаковать", "resources/menu_button.png")
 MoneyPT = menu.PlainText((750, 10), (115, 30), (30, 135, 30), "$:")
 ElectricityPT = menu.PlainText((875, 10), (115, 30), (200, 200, 0), "E:")
-HeatPT = menu.PlainText((1000, 10), (0, 30), (240, 30, 30), "H:")
-board_objects = [ElectricityPT, HeatPT, MoneyPT, next_turn_b, attack_button]
+HeatPT = menu.PlainText((1000, 10), (115, 30), (240, 30, 30), "H:")
+InfoBoard_pic = menu.Picture((707, 235), (448, 448), "resources/info_board.png")
+board_objects = [choosing_board_sprite, ElectricityPT, HeatPT, MoneyPT, next_turn_b, attack_button]
+# others 113
+infogroup = [InfoBoard_pic]
+InfoGroupA = GroupMoving(infogroup, (707, 235), (707, 80), 10)
+
+###########################################################################################################
+
 
 # -- Main game cycle --
 clock = pygame.time.Clock()
@@ -93,12 +106,17 @@ while running:
                 event_type = 'menu'
             if do_smthB.is_clicked(event):
                 event_type = 'board'
+
+## board events
+
+
         elif event_type == 'board':
             if next_turn_b.is_clicked(event):
                 event_type = 'nextturn'
             elif attack_button.is_clicked(event):
                 event_type = 'attack'
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                InfoGroupA.move()
                 main_board.cell_clicked(event.pos, 'activate')
                 choosing_board.cell_clicked(event.pos, 'activate')
                 main_board.board = mas[turn]
@@ -150,6 +168,11 @@ while running:
             if winB.is_clicked(event):
                 event_type = 'menu'
 
+
+
+
+
+#####################################################################################################################
     # --- draws ---
 
     if event_type == 'menu':
@@ -167,7 +190,10 @@ while running:
 
     elif event_type == 'board':
         gl_screen.fill((245, 245, 245))
-        MoneyPT.set_text("$: " + str(money[turn]), (230, 255, 230))
+        m_check = coms_consuption('money', money_list, turn) * -1
+        if m_check >= 0:
+            m_check = '+' + str(m_check)
+        MoneyPT.set_text("$: " + str(money[turn]) + str(m_check), (230, 255, 230))
         h_check = coms_consuption('heat', heat_list, turn) * -1
         if h_check is None:
             h_check = 0
@@ -176,6 +202,7 @@ while running:
         if e_check is None:
             e_check = 0
         ElectricityPT.set_text("E: " + str(e_check), (255, 255, 200))
+        InfoGroupA.update(gl_screen)
         for elem in board_objects:
             elem.draw(gl_screen)
         main_board.render(mas[turn])

@@ -126,7 +126,8 @@ win_condition = 6
 time_to_next_turn = 3  # Time between turns (in seconds)
 players_amount = 2
 # Lists for communications
-heat_list = [11, 12]
+heat_list = [10, 11]
+money_list = [3, 4]
 electricity_list = [1, 2]
 # Screen settings
 WIDTH = 1152

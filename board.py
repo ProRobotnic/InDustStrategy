@@ -6,7 +6,7 @@ import pygame
 
 class Board:
     # создание поля
-    def __init__(self, screen, width, height):
+    def __init__(self, screen, width, height, cell_color=(100, 100, 100)):
         self.width = width
         self.height = height
         self.screen = screen
@@ -17,7 +17,7 @@ class Board:
         self.click = (0, 0)
         self.active_cell = (-1, -1)
         self.active_color = 'red'
-        self.cell_color = (100, 100, 100)
+        self.cell_color = cell_color
         self.can_be_deleted_from = True
 
     # настройка внешнего вида
@@ -52,7 +52,10 @@ class Board:
                                  1)
                 if self.board[y][x] != 0 and buildings_visible:
                     try:
-                        image = pygame.image.load("buildings/" + str(self.board[y][x]) + ".jpg")
+                        try:
+                            image = pygame.image.load("buildings/" + str(self.board[y][x]) + ".jpg")
+                        except Exception:
+                            image = pygame.image.load("buildings/" + str(self.board[y][x]) + ".png")
                         img = pygame.transform.scale(
                             image, (self.cell_size - 2, self.cell_size - 2))
                         self.screen.blit(
