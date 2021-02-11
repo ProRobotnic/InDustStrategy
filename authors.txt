@@ -1,0 +1,11 @@
+Project made by Fedor Shuvalov a.k.a. ProRobot/ProRobotnic/Frodo/WeirdGremlin
+---
+It's final version on ksavkin/project_game,
+ because it's not project of ksavkin and it is unfair that he owns this repo.
+New versions can be found on https://github.com/ProRobotnic/InDustStrategy
+
+Ksavkin hasn't done much job, and all his code has been re-writen so many times,
+ that it would be fair to say that I wrote all code by myself and all work
+ was made by me only.
+
+Fedor Shuvalov, 12.05.2021
