@@ -8,7 +8,7 @@ import time
 
 # -- Local variables --
 attack_to = 0
-event_type = 'win screen'
+event_type = 'board'
 pygame.init()
 attack_was = 0
 gl_screen = pygame.display.set_mode((WIDTH, HEIGHT))  # global screen to use in other files
@@ -24,6 +24,7 @@ main_board = Board(gl_screen, 30, 30)
 choosing_board = Board(gl_screen, 9, 3, (40, 240, 50))
 choosing_board.set_view(WIDTH - choosing_board.width * 32 - 37, 152, 32)
 choosing_board.choosing_table()
+choosing_board.active_color = 'red'
 
 # menu buttons
 Menu_gif = Animator('resources/menu/main_gif', {'cycle': True,  'speed': 6})
@@ -63,12 +64,20 @@ attack_button = menu.PictureButton((752, 690), (150, 30), "Атаковать", 
 MoneyPT = menu.PlainText((750, 10), (115, 30), (30, 135, 30), "$:")
 ElectricityPT = menu.PlainText((875, 10), (115, 30), (200, 200, 0), "E:")
 HeatPT = menu.PlainText((1000, 10), (115, 30), (240, 30, 30), "H:")
-InfoPick = menu.Picture((760, 358), (128, 128), "resources/buildings/9.png")
-InfoBoard_pic = menu.Picture((707, 230), (448, 448), "resources/pager_1.png")
 board_objects = [choosing_board_sprite, ElectricityPT, HeatPT, MoneyPT, next_turn_b, attack_button]
+        # Game screen PagerInfo board widgets
+NameI = menu.PlainText((916, 222), (190, 20), (238, 238, 238), '<name>', 30)
+CostI = menu.PlainText((1018, 268), (90, 16), (238, 238, 238), '<cost>', 24)
+ElectricityI = menu.PlainText((1018, 286), (90, 16), (238, 238, 238), '<electricity>', 24)
+HeatI = menu.PlainText((1018, 304), (90, 16), (238, 238, 238), '<heat>', 24)
+MoneyI = menu.PlainText((1018, 321), (90, 16), (238, 238, 238), '<money>', 24)
+InfoPick = menu.Picture((760, 208), (128, 128), "resources/buildings/9.png")
+InfoBoard_pic = menu.Picture((707, 80), (448, 448), "resources/pager_1.png")
+
+infogroup = [InfoPick, InfoBoard_pic, NameI, CostI, ElectricityI, HeatI, MoneyI]
+InfoGroupA = GroupMoving(infogroup, (707, 80), (707, 230), 2)
 # others
-infogroup = [InfoPick, InfoBoard_pic]
-InfoGroupA = GroupMoving(infogroup, (707, 230), (707, 80), 4)
+
 ###########################################################################################################
 
 
@@ -119,10 +128,12 @@ while running:
             elif attack_button.is_clicked(event):
                 event_type = 'attack'
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                InfoGroupA.move()
-                print(event.pos)
+                #print(event.pos)
+                id_was = choosing_board.active_cell
                 main_board.cell_clicked(event.pos, 'activate')
                 choosing_board.cell_clicked(event.pos, 'activate')
+                if choosing_board.active_cell != id_was:
+                    change_info(InfoGroupA, choosing_board.board[choosing_board.active_cell[1]][choosing_board.active_cell[0]])
                 main_board.board = mas[turn]
                 if choosing_board.active_cell != (-1, -1):
                     i, j = choosing_board.active_cell

@@ -25,6 +25,11 @@ class Picture(object):
         x, y = self.pos
         self.pos = (x + x1, y + y1)
 
+    def change_pic(self, path):
+        image = pygame.image.load(str(path))
+        self.image = pygame.transform.scale(
+            image, (self.size[0], self.size[1]))
+
 class PicturePlainText(Picture):
     def __init__(self, position, size, text, path=None, font_color='white'):
         self.size = size
@@ -66,15 +71,16 @@ class PictureButton(PicturePlainText):
 
 
 class PlainText(object):
-    def __init__(self, position, size, color, text):
+    def __init__(self, position, size, color, text, font_size=32):
         self.image = pygame.Surface(size)
         self.image.fill(color)
         self.color = color
         self.rect = pygame.Rect((0, 0), size)
         self.pos = position
         self.size = size
+        self.font_size = font_size
 
-        self.font = pygame.font.SysFont('None', 32)
+        self.font = pygame.font.SysFont('None', self.font_size)
         text = self.font.render(text, True, 'white')
         text_rect = text.get_rect()
         text_rect.center = self.rect.center
@@ -93,7 +99,12 @@ class PlainText(object):
         self.rect.topleft = self.pos
 
     def draw(self, screen):
+        self.rect.topleft = self.pos
         screen.blit(self.image, self.rect)
+
+    def move(self, x1, y1):
+        x, y = self.pos
+        self.pos = (x + x1, y + y1)
 
 
 class Button(PlainText):

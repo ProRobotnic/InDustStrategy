@@ -16,7 +16,7 @@ cur = con.cursor()
 # Выполнение запроса и получение всех результатов
 buildings_db = cur.execute("""SELECT * FROM buildings ORDER BY id""").fetchall()
 communications_db = cur.execute("""SELECT * FROM communications ORDER BY id""").fetchall()
-
+print(buildings_db)
 
 # Counting resourse cosuption of active buildings (connected to power)
 def coms_consuption(name, com_id_list, player, coof=1):
