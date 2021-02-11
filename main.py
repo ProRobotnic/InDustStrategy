@@ -8,7 +8,7 @@ import time
 
 # -- Local variables --
 attack_to = 0
-event_type = 'menu'
+event_type = 'win screen'
 pygame.init()
 attack_was = 0
 gl_screen = pygame.display.set_mode((WIDTH, HEIGHT))  # global screen to use in other files
@@ -26,9 +26,11 @@ choosing_board.set_view(WIDTH - choosing_board.width * 32 - 37, 152, 32)
 choosing_board.choosing_table()
 
 # menu buttons
+Menu_gif = Animator('resources/menu/main_gif', {'cycle': True,  'speed': 6})
+print(Menu_gif.cycle)
 logo_pic = menu.Picture((501, 15), (150, 150), 'resources/logo.jpg')
 buttons_pic = menu.Picture((371, 235), (410, 325), 'resources/button_holder.png')
-menu_pic = menu.Picture((0, 0), (WIDTH, HEIGHT), "resources/MainMenuPhoto.png")
+menu_pic = menu.Picture((0, 0), (WIDTH * 0, HEIGHT * 0), "resources/MainMenuPhoto.png")
 button1 = menu.PictureButton((476, 300), (200, 35), "  Играть  ", "resources/menu_button.png")
 button2 = menu.PictureButton((476, 350), (0, 35),  " Правила ", "resources/menu_button.png")
 button3 = menu.PictureButton((476, 400), (0, 35),  "Настройки", "resources/menu_button.png")
@@ -48,7 +50,8 @@ click_on_me_b = menu.Button((276, 312), (600, 100), (200, 30, 30), "Нажми �
 attack_pic = menu.Picture((0, 0), (WIDTH, HEIGHT), "resources/8884757x8m.jpg")
 MortarsPT = menu.PlainText((750, 10), (300, 30), (135, 135, 135), "Количество атак: 0")
 atck_sc = [MortarsPT, back_b]
-# winscreen buttons\
+# winscreen buttons
+wp = menu.Picture((0, 0), (WIDTH, HEIGHT), "resources/test.gif")
 win_pic = menu.Picture((0, 0), (WIDTH, HEIGHT), "resources/win.png")
 winB = menu.PictureButton((451, 350), (250, 30), "Вернуться в меню", "resources/menu_button.png")
 winPt = menu.PlainText((376, 250), (400, 60), (100, 15, 15), "Игрок n - победитель!")
@@ -60,12 +63,12 @@ attack_button = menu.PictureButton((752, 690), (150, 30), "Атаковать", 
 MoneyPT = menu.PlainText((750, 10), (115, 30), (30, 135, 30), "$:")
 ElectricityPT = menu.PlainText((875, 10), (115, 30), (200, 200, 0), "E:")
 HeatPT = menu.PlainText((1000, 10), (115, 30), (240, 30, 30), "H:")
-InfoBoard_pic = menu.Picture((707, 235), (448, 448), "resources/info_board.png")
+InfoPick = menu.Picture((760, 358), (128, 128), "resources/buildings/9.png")
+InfoBoard_pic = menu.Picture((707, 230), (448, 448), "resources/pager_1.png")
 board_objects = [choosing_board_sprite, ElectricityPT, HeatPT, MoneyPT, next_turn_b, attack_button]
-# others 113
-infogroup = [InfoBoard_pic]
-InfoGroupA = GroupMoving(infogroup, (707, 235), (707, 80), 10)
-
+# others
+infogroup = [InfoPick, InfoBoard_pic]
+InfoGroupA = GroupMoving(infogroup, (707, 230), (707, 80), 4)
 ###########################################################################################################
 
 
@@ -117,6 +120,7 @@ while running:
                 event_type = 'attack'
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 InfoGroupA.move()
+                print(event.pos)
                 main_board.cell_clicked(event.pos, 'activate')
                 choosing_board.cell_clicked(event.pos, 'activate')
                 main_board.board = mas[turn]
@@ -166,6 +170,7 @@ while running:
                 event_type = 'board'
         elif event_type == 'win screen':
             if winB.is_clicked(event):
+                reset()
                 event_type = 'menu'
 
 
@@ -177,6 +182,7 @@ while running:
 
     if event_type == 'menu':
         gl_screen.fill((230, 230, 230))
+        gl_screen.blit(pygame.transform.scale(Menu_gif.next_(), (WIDTH, HEIGHT)), (0, 0))
         for button in menu_buttons:
             button.draw(gl_screen)
 
@@ -211,7 +217,7 @@ while running:
 
     elif event_type == 'before game':
         gl_screen.fill((245, 245, 245))
-        menu_pic.draw(gl_screen)
+        gl_screen.blit(pygame.transform.scale(Menu_gif.next_(), (WIDTH, HEIGHT)), (0, 0))
         for object in basic_choose_sc:
             object.draw(gl_screen)
         do_smthB.set_text("Подтвердть", 'white')
@@ -238,15 +244,10 @@ while running:
 
     elif event_type == 'win screen':
         gl_screen.fill((245, 245, 245))
-        menu_pic.draw
+        win_pic.draw(gl_screen)
         winB.draw(gl_screen)
         winPt.set_text("Игрок " + str(turn + 1) + ' - победитель!')
         winPt.draw(gl_screen)
-    for i in mas[turn]:
-        for j in i:
-            if j == win_condition:
-                event_type = 'win screen'
-                reset()
     pygame.display.flip()
 
     # --- FPS ---

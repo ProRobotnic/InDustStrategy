@@ -53,9 +53,9 @@ class Board:
                 if self.board[y][x] != 0 and buildings_visible:
                     try:
                         try:
-                            image = pygame.image.load("buildings/" + str(self.board[y][x]) + ".jpg")
+                            image = pygame.image.load("resources/buildings/" + str(self.board[y][x]) + ".jpg")
                         except Exception:
-                            image = pygame.image.load("buildings/" + str(self.board[y][x]) + ".png")
+                            image = pygame.image.load("resources/buildings/" + str(self.board[y][x]) + ".png")
                         img = pygame.transform.scale(
                             image, (self.cell_size - 2, self.cell_size - 2))
                         self.screen.blit(
@@ -63,7 +63,7 @@ class Board:
                             (self.left + self.cell_size * x + 1, self.top + self.cell_size * y + 1))
                     except Exception:
                         try:
-                            image = pygame.image.load("buildings/default.jpg")
+                            image = pygame.image.load("resources/buildings/default.jpg")
                             img = pygame.transform.scale(
                                 image, (self.cell_size - 2, self.cell_size - 2))
                             self.screen.blit(

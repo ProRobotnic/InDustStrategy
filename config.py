@@ -133,6 +133,7 @@ electricity_list = [1, 2]
 WIDTH = 1152
 FPS = 60
 HEIGHT = 725
+TILE = 50
 
 
 def reset():
